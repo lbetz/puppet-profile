@@ -1,37 +1,13 @@
-class profile::icinga2::ido(
+define profile::icinga2::ido::feature(
   String                                 $db_pass,
-  Enum['mysql','pgsql']                  $db_type = 'mysql',
-  Stdlib::Host                           $db_host = '127.0.0.1',
+  Enum['mysql','pgsql']                  $db_type,
+  Stdlib::Host                           $db_host,
+  String                                 $db_name,
+  String                                 $db_user,
   Optional[Stdlib::Port::Unprivileged]   $db_port = undef,
-  String                                 $db_name = 'icinga2',
-  String                                 $db_user = 'icinga2',
 ) {
 
   assert_private()
-
-  require ::profile::icinga2
-
-  if $db_host in [ '127.0.0.1', '::1' ] {
-    if $db_type == 'pgsql' {
-      include ::postgresql::server
-
-      postgresql::server::db { $db_name:
-        user     => $db_user,
-        password => postgresql_password($db_user, $db_pass),
-        before   => Class['icinga2::feature::idopgsql'],
-      }
-    } else {
-      include ::mysql::server
-
-      mysql::db { $db_name:
-        host     => $db_host,
-        user     => $db_user,
-        password => $db_pass,
-        grant    => ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'DROP', 'CREATE VIEW', 'CREATE', 'ALTER', 'INDEX', 'EXECUTE'],
-        before   => Class['icinga2::feature::idomysql'],
-      }
-    }
-  }
 
   if $::kernel == 'linux' {
     if $::osfamily == 'debian' {
@@ -58,4 +34,46 @@ class profile::icinga2::ido(
     import_schema => true,
   }
 
+}
+
+class profile::icinga2::ido(
+  String                                 $db_pass,
+  Stdlib::Host                           $instance = 'localhost',
+  Enum['mysql','pgsql']                  $db_type  = 'mysql',
+  String                                 $db_host  = $::ipaddress_eth1,
+  Optional[Stdlib::Port::Unprivileged]   $db_port  = undef,
+  String                                 $db_name  = 'icinga2',
+  String                                 $db_user  = 'icinga2',
+) {
+
+  if $instance =~ /^localhost/ {
+    $_db_host = 'localhost'
+
+    profile::icinga2::ido::feature { $instance:
+      db_type => $db_type,
+      db_host => $instance,
+      db_name => $db_name,
+      db_user => $db_user,
+      db_pass => $db_pass,
+      require => Mysql::Db[$db_name],
+    }
+  } else {
+    $_db_host = $instance
+
+    @@profile::icinga2::ido::feature { $instance:
+      db_type => $db_type,
+      db_host => $db_host,
+      db_port => $db_port,
+      db_name => $db_name,
+      db_user => $db_user,
+      db_pass => $db_pass,
+    }
+  }
+
+  mysql::db { $db_name:
+    host     => $_db_host,
+    user     => $db_user,
+    password => $db_pass,
+    grant    => ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'DROP', 'CREATE VIEW', 'CREATE', 'ALTER', 'INDEX', 'EXECUTE'],
+  }
 }
