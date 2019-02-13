@@ -17,7 +17,7 @@ class profile::icinga2::server::standalone {
     ido_db_type  => $::profile::icinga2::ido::db_type,
     ido_db_host  => $::profile::icinga2::ido::db_host,
     ido_db_port  => $::profile::icinga2::ido::db_port,
-    ido_db_name  => $::profile::icinga2::ido::db_dbame,
+    ido_db_name  => $::profile::icinga2::ido::db_name,
     ido_db_user  => $::profile::icinga2::ido::db_user,
     ido_db_pass  => $::profile::icinga2::ido::db_pass,
   }

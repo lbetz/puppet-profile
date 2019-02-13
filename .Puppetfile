@@ -2,7 +2,7 @@ forge "http://forge.puppetlabs.com"
 
 mod 'profile',	 		local: true
 
-mod 'puppetlabs/stdlib',	'4.25.1'
+mod 'puppetlabs/stdlib',	'5.1.0'
 mod 'puppetlabs/concat',	'5.1.0'
 mod 'puppetlabs/translate',	'1.2.0'
 
