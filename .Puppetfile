@@ -25,7 +25,7 @@ mod 'puppet/nginx'
 
 mod 'icinga2',
   :git => 'https://github.com/icinga/puppet-icinga2.git',
-  :branch => 'v2.x'
+  :branch => 'master'
 mod 'icingaweb2',
   :git => 'https://github.com/icinga/puppet-icingaweb2.git',
   :branch => 'master'
