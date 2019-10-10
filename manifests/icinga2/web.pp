@@ -44,14 +44,14 @@ class profile::icinga2::web(
         rhscl_mode  => 'rhscl',
       }
       $php_extensions = {
-        mbstring => {},
-        json     => {},
-        ldap     => {},
-        gd       => {},
-        xml      => {},
-        intl     => {},
-        mysqlnd  => {},
-        pgsql    => {},
+        mbstring => { ini_prefix => '20-' },
+        json     => { ini_prefix => '20-' },
+        ldap     => { ini_prefix => '20-' },
+        gd       => { ini_prefix => '20-' },
+        xml      => { ini_prefix => '20-' },
+        intl     => { ini_prefix => '20-' },
+        mysqlnd  => { ini_prefix => '20-' },
+        pgsql    => { ini_prefix => '20-' },
       }
     } # RedHat
 

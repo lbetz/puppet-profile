@@ -1,10 +1,6 @@
 define profile::icinga2::ido::feature(
-  String                                 $db_pass,
   Enum['mysql','pgsql']                  $db_type,
-  Stdlib::Host                           $db_host,
-  String                                 $db_name,
-  String                                 $db_user,
-  Optional[Stdlib::Port::Unprivileged]   $db_port = undef,
+  Hash                                   $config = {},
 ) {
 
   assert_private()
@@ -38,20 +34,20 @@ define profile::icinga2::ido::feature(
 
 class profile::icinga2::ido(
   String                                 $db_pass,
-  Stdlib::Host                           $instance = 'localhost',
-  Enum['mysql','pgsql']                  $db_type  = 'mysql',
-  String                                 $db_host  = $::ipaddress_eth1,
-  Optional[Stdlib::Port::Unprivileged]   $db_port  = undef,
-  String                                 $db_name  = 'icinga2',
-  String                                 $db_user  = 'icinga2',
+  Stdlib::Host                           $icinga_host = 'localhost',
+  Enum['mysql','pgsql']                  $db_type     = 'mysql',
+  String                                 $db_host     = 'localhost',
+  Optional[Stdlib::Port::Unprivileged]   $db_port     = undef,
+  String                                 $db_name     = 'icinga2',
+  String                                 $db_user     = 'icinga2',
 ) {
 
-  if $instance =~ /^localhost/ {
+  if $icinga_host =~ /^(localhost|::|127\.)/ {
     $_db_host = 'localhost'
 
-    profile::icinga2::ido::feature { $instance:
+    profile::icinga2::ido::feature { $icinga_host:
       db_type => $db_type,
-      db_host => $instance,
+      db_host => $icinga_host,
       db_name => $db_name,
       db_user => $db_user,
       db_pass => $db_pass,
@@ -60,7 +56,7 @@ class profile::icinga2::ido(
   } else {
     $_db_host = $instance
 
-    @@profile::icinga2::ido::feature { $instance:
+    @@profile::icinga2::ido::feature { $icinga_host:
       db_type => $db_type,
       db_host => $db_host,
       db_port => $db_port,
