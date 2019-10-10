@@ -2,6 +2,8 @@ class profile::icinga2::server::standalone {
 
   $ticket_salt = lookup('profile::icinga2::ticket_salt')
 
+  package { 'git': }
+
   class { '::profile::icinga2':
     confd     => true,
     constants => { 'TicketSalt' => $ticket_salt } 
@@ -22,4 +24,13 @@ class profile::icinga2::server::standalone {
     ido_db_pass  => $::profile::icinga2::ido::db_pass,
   }
 
+  $api_user = lookup('profile::icinga2::web::director::api_user')
+  $api_pass = lookup('profile::icinga2::web::director::api_pass')
+
+  ::icinga2::object::apiuser { $api_user:
+    ensure      => present,
+    password    => $api_pass,
+    permissions => [ '*' ],
+    target      => '/etc/icinga2/conf.d/api-users.conf',
+  }
 }
